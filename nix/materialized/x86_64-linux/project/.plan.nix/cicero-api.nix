@@ -10,8 +10,8 @@
   {
     flags = {};
     package = {
-      specVersion = "3.4";
-      identifier = { name = "cicero-api"; version = "0.1.1.2"; };
+      specVersion = "3.0";
+      identifier = { name = "cicero-api"; version = "0.1.1.3"; };
       license = "Apache-2.0";
       copyright = "";
       maintainer = "shea.levy@iohk.io";
