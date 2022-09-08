@@ -10,6 +10,7 @@ module IOHK.Cicero.API.Run where
 
 import Data.Aeson
 import Data.Coerce
+import Data.Text
 import Data.Time.LocalTime
 import Data.UUID
 import Numeric.Natural
@@ -41,6 +42,10 @@ data RunRoutes mode = RunRoutes
                :> "fact"
                :> ReqBody '[OctetStream] CreateFactV1
                :> Post '[JSON] FactV1
+  , getLogs :: mode
+            :- Capture "id" RunID
+            :> "logs"
+            :> Get '[JSON] RunLogsV1
   } deriving stock Generic
 
 data RunV2 = Run
@@ -69,4 +74,42 @@ instance ToJSON RunV2 where
    <> "invocation_id" .= r.invocationId
    <> "created_at" .= r.createdAt
    <> "finished_at" .= r.finishedAt
+    )
+
+newtype RunLogsV1 = RunLogs [RunLog]
+
+instance FromJSON RunLogsV1 where
+  parseJSON = withObject "RunLogsV1" \o ->
+    RunLogs <$> o .: "logs"
+
+instance ToJSON RunLogsV1 where
+  toJSON (RunLogs logs) = object
+    [ "logs" .= logs
+    ]
+  toEncoding (RunLogs logs) = pairs
+    ( "logs" .= logs
+    )
+
+data RunLog = RunLog
+  { time :: !ZonedTime
+  , source :: !Text
+  , text :: !Text
+  }
+
+instance FromJSON RunLog where
+  parseJSON = withObject "RunLog" \o -> RunLog
+    <$> o .: "Time"
+    <*> o .: "Source"
+    <*> o .: "Text"
+
+instance ToJSON RunLog where
+  toJSON r = object
+    [ "Time" .= r.time
+    , "Source" .= r.source
+    , "Text" .= r.text
+    ]
+  toEncoding r = pairs
+    ( "Time" .= r.time
+   <> "Source" .= r.source
+   <> "Text" .= r.text
     )

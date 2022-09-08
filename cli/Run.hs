@@ -55,29 +55,40 @@ data CreateFactArgs = CreateFactArgs
   , factArgs :: !Fact.CreateFactArgs
   }
 
+runIdArgsParser :: Parser RunID
+runIdArgsParser = option (maybeReader runIdFromString)
+  ( long "run-id"
+ <> metavar "RUN_ID"
+ <> help "the ID of the run to associate the fact with"
+  )
+
 createFactArgsParser :: Parser CreateFactArgs
 createFactArgsParser = CreateFactArgs
-  <$> option (maybeReader runIdFromString)
-        ( long "run-id"
-       <> metavar "RUN_ID"
-       <> help "the ID of the run to associate the fact with"
-        )
+  <$> runIdArgsParser
   <*> Fact.createFactArgsParser
 
-createFactArgsInfo :: ParserInfo CreateFactArgs
-createFactArgsInfo = info createFactArgsParser
+createFactInfo :: ParserInfo CreateFactArgs
+createFactInfo = info createFactArgsParser
   ( fullDesc
  <> header "cicero-cli run create-fact — Create a new fact associated with a run"
+  )
+
+getLogsInfo :: ParserInfo RunID
+getLogsInfo = info runIdArgsParser
+  ( fullDesc
+ <> header "cicero-cli run get-logs — Get logs for a run"
   )
 
 data RunCommand
   = CmdGetRuns !GetRunsArgs
   | CmdCreateFact !CreateFactArgs
+  | CmdGetLogs !RunID
 
 runCommandParser :: Parser RunCommand
 runCommandParser = hsubparser
   ( command "get-all" (CmdGetRuns <$> getRunsInfo)
- <> command "create-fact" (CmdCreateFact <$> createFactArgsInfo)
+ <> command "create-fact" (CmdCreateFact <$> createFactInfo)
+ <> command "get-logs" (CmdGetLogs <$> getLogsInfo)
   )
 
 runCommandInfo :: ParserInfo RunCommand
@@ -92,3 +103,6 @@ handler (CmdGetRuns gra) runClient cEnv = runClientM (runClient.getAll gra.recur
   Right res -> hPutStrLn stdout $ encode res
 handler (CmdCreateFact createArgs) runClient cEnv =
   Fact.createFactHandler createArgs.factArgs (runClient.createFact createArgs.run) cEnv
+handler (CmdGetLogs rid) runClient cEnv = runClientM (runClient.getLogs rid) cEnv >>= \case
+  Left e -> throw e
+  Right res -> hPutStrLn stdout $ encode res
