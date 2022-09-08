@@ -1,8 +1,6 @@
 cabal-version: 3.4
 name:          cicero-api
-version:       0.1.1.0
-author:        Shea Levy
-maintainer:    shea.levy@iohk.io
+version:       0.1.1.1
 license:       Apache-2.0
 license-files:
   LICENSE
@@ -11,8 +9,17 @@ maintainer:  shea.levy@iohk.io
 author:      Shea Levy
 homepage:    https://github.com/input-output-hk/cicero-api#readme
 bug-reports: https://github.com/input-output-hk/cicero-api/issues
-description: API bindings to Cicero
+synopsis: API bindings to IOHK's Cicero job scheduler
+description:
+  API bindings to IOHK's Cicero job scheduler. Also includes a simple CLI client.
+
+  See github.com/input-output-hk/cicero
 build-type: Simple
+category: API
+
+source-repository head
+    type: git
+    location: https://github.com/input-output-hk/cicero-pipe
 
 library
   exposed-modules:
