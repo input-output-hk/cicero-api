@@ -11,15 +11,15 @@
     flags = {};
     package = {
       specVersion = "3.4";
-      identifier = { name = "cicero-api"; version = "0.1.0.0"; };
+      identifier = { name = "cicero-api"; version = "0.1.1.2"; };
       license = "Apache-2.0";
       copyright = "";
       maintainer = "shea.levy@iohk.io";
       author = "Shea Levy";
       homepage = "https://github.com/input-output-hk/cicero-api#readme";
       url = "";
-      synopsis = "";
-      description = "API bindings to Cicero";
+      synopsis = "API bindings to IOHK's Cicero job scheduler";
+      description = "API bindings to IOHK's Cicero job scheduler. Also includes a simple CLI client.\n\nSee github.com/input-output-hk/cicero";
       buildType = "Simple";
       isLocal = true;
       detailLevel = "FullDetails";
