@@ -86,7 +86,8 @@ main = do
     Just u -> runInputT defaultSettings (getPassword Nothing ("password for " ++ (BS.unpack u) ++ ":")) >>= \case
       Just s -> pure . Just . BasicAuthData u $ BS.pack s
       Nothing -> fail "no password provided"
-  manager <- newManager tlsManagerSettings
+  manager <- newTlsManagerWith $
+        tlsManagerSettings { managerResponseTimeout = responseTimeoutNone }
   let
     cEnv = mkClientEnv manager args.ciceroURL
     cEnv' = case auth of
