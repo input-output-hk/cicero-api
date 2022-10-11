@@ -8,7 +8,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, haskell-nix }@inputs: let
-    supportedSystems = [ "x86_64-linux" "x86_64-darwin" ];
+    supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-darwin" ];
 
     ifExists = p: if builtins.pathExists p then p else null;
 
@@ -38,6 +38,8 @@
               version = "5.0.18.3";
               materialized = materializedFor "hoogle";
             };
+            haskell-language-server = { };
+            hlint = { };
           };
 
           project = pkgs.haskell-nix.cabalProject' {

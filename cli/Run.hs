@@ -79,16 +79,24 @@ getLogsInfo = info runIdArgsParser
  <> header "cicero-cli run get-logs — Get logs for a run"
   )
 
+abortRunInfo :: ParserInfo RunID
+abortRunInfo = info runIdArgsParser
+  ( fullDesc
+ <> header "cicero-cli run abort — Abort a run"
+  )
+
 data RunCommand
   = CmdGetRuns !GetRunsArgs
   | CmdCreateFact !CreateFactArgs
   | CmdGetLogs !RunID
+  | CmdAbortRun !RunID
 
 runCommandParser :: Parser RunCommand
 runCommandParser = hsubparser
   ( command "get-all" (CmdGetRuns <$> getRunsInfo)
  <> command "create-fact" (CmdCreateFact <$> createFactInfo)
  <> command "get-logs" (CmdGetLogs <$> getLogsInfo)
+ <> command "abort" (CmdAbortRun <$> abortRunInfo)
   )
 
 runCommandInfo :: ParserInfo RunCommand
@@ -106,3 +114,6 @@ handler (CmdCreateFact createArgs) runClient cEnv =
 handler (CmdGetLogs rid) runClient cEnv = runClientM (runClient.getLogs rid) cEnv >>= \case
   Left e -> throw e
   Right res -> hPutStrLn stdout $ encode res
+handler (CmdAbortRun rid) runClient cEnv = runClientM (runClient.abort rid) cEnv >>= \case
+  Left e -> throw e
+  Right _ -> pure ()
