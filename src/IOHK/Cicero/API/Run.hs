@@ -46,6 +46,9 @@ data RunRoutes mode = RunRoutes
             :- Capture "id" RunID
             :> "logs"
             :> Get '[JSON] RunLogsV1
+  , abort :: mode
+          :- Capture "id" RunID
+          :> DeleteNoContent
   } deriving stock Generic
 
 data RunV2 = Run
