@@ -38,8 +38,16 @@
               version = "5.0.18.3";
               materialized = materializedFor "hoogle";
             };
-            haskell-language-server = { };
-            hlint = { };
+            haskell-language-server = {
+              inherit (project) index-state evalSystem;
+              version = "1.7.0.0";
+              materialized = materializedFor "haskell-language-server";
+            };
+            hlint = {
+              inherit (project) index-state evalSystem;
+              version = "3.4.1";
+              materialized = materializedFor "hlint";
+            };
           };
 
           project = pkgs.haskell-nix.cabalProject' {
@@ -60,10 +68,10 @@
             cd .${materializedRelative}
             echo "Updating project materialization" >&2
             ${project.plan-nix.passthru.generateMaterialized} project
-            echo "Updating cabal materialization" >&2
-            ${tools-built.cabal.project.plan-nix.passthru.generateMaterialized} cabal
-            echo "Updating hoogle materialization" >&2
-            ${tools-built.hoogle.project.plan-nix.passthru.generateMaterialized} hoogle
+            ${evalPkgs.lib.concatStringsSep "\n" (map (tool: ''
+              echo "Updating ${tool} materialization" >&2
+              ${tools-built.${tool}.project.plan-nix.passthru.generateMaterialized} ${tool}
+            '') (builtins.attrNames tools-built))}
           '';
         };
       }) supportedSystems);
